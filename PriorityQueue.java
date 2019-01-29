@@ -1,62 +1,122 @@
 package assign03;
 
+import java.lang.reflect.Array;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.NoSuchElementException;
+import java.util.Comparator;
+import java.util.List;
+
 
 /**
- * A priority queue that supports access of the minimum element only.
  * 
- * @author Erin Parker
- * @version January 23, 2019
- * 
- * @param <E> - the type of elements contained in this priority queue
+ * @author Morgan Mischo and Casey Rand
+ *
+ * @param <E>
  */
-public interface PriorityQueue<E> {
+public class SimplePriorityQueue<E> implements PriorityQueue {
+	
+	private E[] arr; 
+	private int size;
+	private Comparator<? super E> ourComparator; 
+	
 
 	/**
-	 * Retrieves, but does not remove, the minimum element in this priority
-	 * queue.
-	 * 
-	 * @return the minimum element
-	 * @throws NoSuchElementException if the priority queue is empty
+	 * Constructor for SimplePriorityQueue w/out params
 	 */
-	public E findMin() throws NoSuchElementException;
+	public SimplePriorityQueue()
+	{
+		arr = (E[])new Object[16]; 
+		size = 0; 
+		ourComparator = null; 
+	}
+	
+	/**
+	 * Constructor for SimplePriorityQueue w/ params
+	 */
+	
+	public SimplePriorityQueue (Comparator<? super E> userComparator)
+	{
+		arr = (E[])new Object[16]; 
+		size = 0; 
+		ourComparator = userComparator; 	
+	}
+
+	@Override
+	public Object findMin() throws NoSuchElementException {
+		if(arr.isEmpty())
+			throw new NoSuchElementException("No elements found.");
+
+		return arr.indexOf(arr.size()-1);
+	}
+
+	@Override
+	public Object deleteMin() throws NoSuchElementException {
+		if(arr.isEmpty())
+			throw new NoSuchElementException("No elements found.");
+
+		Object lastValue = arr.get(size()-1);
+		arr.remove(lastValue);
+		return lastValue;
+	}
+
+	@Override
+	public void insert(Object item) {
+		int low = 0;
+		int high = arr.size();
+		
+		while(low < high)
+		{
+			int mid = (low + high) / 2;
+			
+			if(arr.get(mid) == item)
+			{
+				arr.add(mid, (E) item);
+			}
+			
+			if(((Object) arr.get(mid)).compareTo(item))
+			{
+				low = mid + 1;
+			}
+			
+			else
+			{
+				high = mid;
+			}
+		}
+	}
+
+	@Override
+	public void insertAll(Collection coll) {
+	
+		Object[] myArray = new Object[coll.size()]; 
+		coll.toArray(myArray); 
+		
+		for(int i = 0; i < coll.size();  i++)
+		{
+			insert(myArray[i]);
+		}
+		
+	}
+
+	@Override
+	public int size() {
+		//Maybe not array
+		return arr.size();
+	}
 
 	/**
-	 * Retrieves and removes the minimum element in this priority queue.
-	 * 
-	 * @return the minimum element
-	 * @throws NoSuchElementException if the priority queue is empty
+	 * Returns true if this priority cue contains no elements.
 	 */
-	public E deleteMin() throws NoSuchElementException;
+	@Override
+	public boolean isEmpty() {
+		return (arr.size() == 0);
+	}
 
-	/**
-	 * Inserts the specified element into this priority queue.
-	 * 
-	 * @param item - the element to insert
-	 */
-	public void insert(E item);
-
-	/**
-	 * Inserts the specified elements into this priority queue.
-	 * 
-	 * @param coll - the collection of elements to insert
-	 */
-	public void insertAll(Collection<? extends E> coll);
-
-	/**
-	 * @return the number of elements in this priority queue
-	 */
-	public int size();
-
-	/**
-	 * @return true if this priority queue contains no elements, false otherwise
-	 */
-	public boolean isEmpty();
-
-	/**
-	 * Removes all of the elements from this priority queue. The queue will be
-	 * empty when this call returns.
-	 */
-	public void clear();
+	@Override
+	public void clear() {
+		//Not array list while loop 
+		arr.clear();		
+	}
 }
