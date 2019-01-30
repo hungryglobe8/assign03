@@ -25,6 +25,7 @@ public class SimplePriorityQueue<E> implements PriorityQueue {
 	/**
 	 * Constructor for SimplePriorityQueue w/out params
 	 */
+	@SuppressWarnings("unchecked")
 	public SimplePriorityQueue()
 	{
 		arr = (E[])new Object[16]; 
@@ -36,6 +37,7 @@ public class SimplePriorityQueue<E> implements PriorityQueue {
 	 * Constructor for SimplePriorityQueue w/ params
 	 */
 	
+	@SuppressWarnings("unchecked")
 	public SimplePriorityQueue (Comparator<? super E> userComparator)
 	{
 		arr = (E[])new Object[16]; 
@@ -53,6 +55,7 @@ public class SimplePriorityQueue<E> implements PriorityQueue {
 		return arr[size - 1]; 
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public Object deleteMin() throws NoSuchElementException {
 		if(size == 0)
@@ -64,7 +67,7 @@ public class SimplePriorityQueue<E> implements PriorityQueue {
 		
 		E[] newArray = (E[])new Object[size - 1]; 
 		
-		for(int i = 0; i < size - 2; i++)
+		for(int i = 0; i < size - 1; i++)
 		{
 				newArray[i] = arr[i]; 
 		}
@@ -77,33 +80,89 @@ public class SimplePriorityQueue<E> implements PriorityQueue {
 	@SuppressWarnings("unchecked")
 	@Override
 	public void insert(Object item) {
-		
 		int low = 0;
 		int high = size;
 		
-		//Create new larger array to store values and have roomfor insertion.
-		E[] newArray = (E[])new Object[size +1];
-		for(int i = 0; i < size; i++)
+		//Create new larger array to store values and have room for insertion.
+		E[] newArray;
+		
+		//If array is empty, put item in first element of array.
+		if(size == 0)
 		{
-			newArray[i] = arr[i];
+			arr[0] = (E) item;
+			size++;
+			return;
 		}
 		
-		Object o1;
-		Object o2;
+		//If array has one element, compare and insert.
+		if(size == 1)
+		{
+			if(innerCompare(arr[0], (E) item) == 0 || innerCompare(arr[0], (E) item) > 0)
+			{
+				arr[1] = (E) item;
+			}			
+			else
+			{
+				arr[1] = arr[0];
+				arr[0] = (E) item;
+			}
+			size++;
+			return;
+		}
+		
+		//If array is not full, length stays the same.
+		if(size < arr.length) 
+		{
+			newArray = (E[])new Object[arr.length];
+			for(int i = 0; i < arr.length; i++)
+			{
+				newArray[i] = arr[i];
+			}
+		}
+		//Array is full, make larger array.
+		else
+		{
+			newArray = (E[])new Object[size + 1];
+		}
+		
+		//If item is greater than all other elements, insert at beginning.
+		if(innerCompare((E) item, arr[0]) > 0)
+		{
+			shiftArray(0, newArray);
+			newArray[0] = (E) item;
+			arr = newArray;
+			size++;
+			return;
+		}
+		
+		//If item is less than all other elements, insert at end.
+		if(innerCompare((E) item, arr[size - 1]) < 0)
+		{
+			newArray[size] = (E) item;
+			arr = newArray;
+			size++;
+			return;
+		}
+		
+		//Perform a binary search and insert where o1 is greater and o2 is less than item.
+		E o1;
+		E o2;
 		
 		while(low < high)
 		{
 			int mid = (low + high) / 2;
-			o1 = newArray[mid];
-			o2 = newArray[mid + 1];
+			o1 = newArray[mid - 1];
+			o2 = newArray[mid];
 			
-			if(((Comparable<? super E>) arr[mid]).compareTo((E) item) == 0 || (((Comparable<? super E>) o1).compareTo((E) item) > 0) && ((Comparable<? super E>) o2).compareTo((E) item) < 0)  
+			if(innerCompare(o1, (E) item) == 0 || innerCompare(o1, (E) item) > 0 && innerCompare(o2, (E) item) < 0)  
 			{
 				shiftArray(mid, newArray);
-				arr[mid] = (E) item; 
+				newArray[mid] = (E) item;
+				arr = newArray;
+				break;
 			}
 			
-			if(((Comparable<? super E>) o1).compareTo((E) item) < 0)
+			if(((Comparable<? super E>) o1).compareTo((E) item) > 0)
 			{
 				low = mid + 1;
 			}
@@ -116,12 +175,44 @@ public class SimplePriorityQueue<E> implements PriorityQueue {
 		size++;
 	}
 	
+	/**
+	 * Makes room for new element to be inserted when the location has been found.
+	 * @param count index where element will be inserted
+	 * @param newArray array to preserve new values
+	 */
 	private void shiftArray(int count, E[] newArray)
 	{
-		for(int i = size; i >= count; i--)
+		for(int i = size; i > count; i--)
 		{
-			newArray[i + 1] = newArray[i];
+			newArray[i] = newArray[i - 1];
 		}
+	}
+	
+	/**
+	 * This helper method compares two E elements. If user doesn't input comparator, uses .compareTo.
+	 * Else uses .compare
+	 * @param o1
+	 * @param o2
+	 * @return 0 if equal, 1 if o1 is greater, -1 if o2 is greater
+	 */
+	@SuppressWarnings("unchecked")
+	private int innerCompare(E o1, E o2)
+	{
+		if(ourComparator == null)
+		{
+			return ((Comparable<? super E>) o1).compareTo(o2);
+		}
+		return ourComparator.compare(o1, o2);
+	}
+
+	/**
+	 * Returns E at specified index
+	 * @param i
+	 * @return
+	 */
+	public E getIndex(int i)
+	{
+		return arr[i];
 	}
 
 	@Override
