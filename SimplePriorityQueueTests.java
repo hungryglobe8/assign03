@@ -9,6 +9,9 @@ import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import assign02.LibraryBook;
+import assign02.LibraryGeneric;
+
 
 
 /**
@@ -18,63 +21,171 @@ import org.junit.jupiter.api.Test;
  *
  */
 class SimplePriorityQueueTests {
+	
+	private SimplePriorityQueue<String> simpleString = new SimplePriorityQueue<String>();
+	private SimplePriorityQueue<Integer> simpleInt = new SimplePriorityQueue<Integer>();
+	private SimplePriorityQueue<Object> simpleGeneric = new SimplePriorityQueue<Object>();
+	
+	private List<String> someStrings = new ArrayList<String>();	
+	
+	@Test
+	void insertSingleElement()
+	{
+		String[] expected = new String[]{"Cat"};
+		
+		simpleString.insert("Cat");
+		
+		assertTrue(simpleString.getIndex(0).equals(expected[0]));
+	}
 
-	private SimplePriorityQueue simpleString, simpleInt, simpleDouble, simpleGeneric; 
-	private List someStrings, someInts, someGenerics;   
-	
-	@BeforeEach
-	void setup () throws Exception {
-	someStrings = new ArrayList<String>(); 
-	someStrings.add("Cat"); 
-	someStrings.add("Dog"); 
-	someStrings.add("Mouse"); 
-	
-	someInts = new ArrayList<Integer>();
-	someInts.add(1); 
-	someInts.add(2); 
-	someInts.add(3); 
-	
-	someGenerics = new ArrayList<Object>();
-	someGenerics.add(1); 
-	someGenerics.add(2.3); 
-	someGenerics.add(3); 
+	@Test
+	void insertThreeElements()
+	{
+		simpleInt.insert(1);
+		simpleInt.insert(5);
+		simpleInt.insert(7);
 		
-	simpleString  = new SimplePriorityQueue<String>();
-	simpleString.insertAll(someStrings);
-	
-	simpleInt = new SimplePriorityQueue<Integer>(); 
-	simpleInt.insertAll(someInts);
-		
-	simpleGeneric = new SimplePriorityQueue<>();
-	simpleGeneric.insertAll(someGenerics);
-	
+		assertTrue(simpleInt.getIndex(2).equals(1));
 	}
 	
-	//Tests for finding min
 	@Test
-	void testFindMinSimpleString() {
+	void mixedThreeElements()
+	{
+		SimplePriorityQueue<Integer> simpleInt = new SimplePriorityQueue<Integer>();
+		
+		simpleInt.insert(5);
+		simpleInt.insert(1);
+		simpleInt.insert(7);
+		
+		assertTrue(simpleInt.getIndex(1).equals(5));
+		assertTrue(simpleInt.getIndex(0).equals(7));
+	}
+	
+	@Test
+	void finalValueSort()
+	{	
+		simpleInt.insert(3);
+		simpleInt.insert(15);
+		simpleInt.insert(7);
+		simpleInt.insert(34);
+		simpleInt.insert(-3);
+		simpleInt.insert(8);
+		
+		assertTrue(simpleInt.getIndex(0).equals(34));
+		assertTrue(simpleInt.getIndex(2).equals(8));
+		assertTrue(simpleInt.getIndex(5).equals(-3));
+	}
+	
+	@Test
+	void testFindMinSimpleString() 
+	{
+		simpleString.insert("Cat");
 		Object expected = "Cat"; 
+		
 		Object actual = simpleString.findMin(); 
 		
 		assertEquals(expected, actual); 
 	}
 	
 	@Test
-	void testFindMinSimpleInt() {
-		Object expected = 1; 
+	void testFindMinSimpleInt() 
+	{
+		simpleInt.insert(1);
+		simpleInt.insert(-4);
+		simpleInt.insert(8);
+		Object expected = -4;
+		
 		Object actual = simpleInt.findMin(); 
 		
 		assertEquals(expected, actual); 	
 	}
 	
 	@Test
-	void testFindMinSimpleGenerics() {
-		Object expected = 1; 
-		Object actual = simpleGeneric.findMin(); 
+	void insertGeneric() 
+	{
+		Object grape = new Object();
+		simpleGeneric.insert(grape);
+		
+		Object expected = grape; 
+		Object actual = simpleGeneric.getIndex(0);
 		
 		assertEquals(expected, actual); 
 	}
 	
+	@Test
+	void insertStringList() 
+	{
+		someStrings = new ArrayList<String>();
+		someStrings.add("Pig");
+		someStrings.add("Cat");
+		someStrings.add("Turkey");
+		simpleString.insertAll(someStrings);
+		
+		assertEquals(simpleString.getIndex(2), "Cat");
+	}
 	
+	@Test
+	void removeMin()
+	{
+		someStrings = new ArrayList<String>();
+		someStrings.add("Pig");
+		someStrings.add("Cat");
+		someStrings.add("Turkey");
+		simpleString.insertAll(someStrings);
+		
+		simpleString.deleteMin();
+		
+		assertEquals(simpleString.getIndex(1), "Pig");
+		assertTrue(simpleString.size() == 2);
+	}
+	
+	@Test
+	void clearStrings()
+	{
+		someStrings = new ArrayList<String>();
+		someStrings.add("Pig");
+		someStrings.add("Cat");
+		someStrings.add("Turkey");
+		SimplePriorityQueue<String> blankString = simpleString;
+		simpleString.insertAll(someStrings);
+		
+		simpleString.clear();
+		assertEquals(blankString, simpleString);
+	}
+	
+	@Test
+	void removeUntilClear()
+	{
+		someStrings = new ArrayList<String>();
+		someStrings.add("Pig");
+		someStrings.add("Cat");
+		someStrings.add("Turkey");
+		simpleString.insertAll(someStrings);
+		
+		//This method deletes the min 3 times to clear.
+		SimplePriorityQueue<String> removeString = simpleString;
+		removeString.deleteMin();
+		removeString.deleteMin();
+		removeString.deleteMin();
+		
+		//This is the normal clear method.
+		simpleString.clear();
 
+		
+		assertEquals(removeString, simpleString);
+	}
+	
+	@Test
+	void clearIsEmpty()
+	{
+		someStrings = new ArrayList<String>();
+		someStrings.add("Pig");
+		someStrings.add("Cat");
+		someStrings.add("Turkey");
+		simpleString.insertAll(someStrings);
+		
+		simpleString.clear();
+		
+		assertTrue(simpleString.isEmpty());
+	}
 }
