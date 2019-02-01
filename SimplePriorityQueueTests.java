@@ -38,20 +38,21 @@ import assign02.LibraryGeneric;
  * 
 
  * @author Casey Rand and Morgan Mischo
+ * @param <E>
 
  *
 
  */
 
-class SimplePriorityQueueTests {
+class SimplePriorityQueueTests<E> {
 
 	
 
-	private SimplePriorityQueue<String> simpleString = new SimplePriorityQueue<String>();
+	private SimplePriorityQueue<E> simpleString = new SimplePriorityQueue<E>();
 
-	private SimplePriorityQueue<Integer> simpleInt = new SimplePriorityQueue<Integer>();
+	private SimplePriorityQueue<E> simpleInt = new SimplePriorityQueue<E>();
 
-	private SimplePriorityQueue<Object> simpleGeneric = new SimplePriorityQueue<Object>();
+	private SimplePriorityQueue<E> simpleGeneric = new SimplePriorityQueue<E>();
 
 	
 
@@ -295,7 +296,7 @@ class SimplePriorityQueueTests {
 
 		someStrings.add("Turkey");
 
-		SimplePriorityQueue<String> blankString = simpleString;
+		SimplePriorityQueue<E> blankString = simpleString;
 
 		simpleString.insertAll(someStrings);
 
@@ -329,7 +330,7 @@ class SimplePriorityQueueTests {
 
 		//This method deletes the min 3 times to clear.
 
-		SimplePriorityQueue<String> removeString = simpleString;
+		SimplePriorityQueue<E> removeString = simpleString;
 
 		removeString.deleteMin();
 
