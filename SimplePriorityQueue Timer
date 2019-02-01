@@ -1,0 +1,93 @@
+package assign03;
+
+import java.util.Arrays;
+import java.util.Random;
+
+public class SimplePriorityQueueTimer {
+	/**
+	 * This program tries to determine how long it takes to find the min 
+	 * of each number
+	 */
+	@SuppressWarnings("unused")
+	public static void main(String[] args) {
+		
+		Random rng = new Random();
+		
+		final int TIMES_TO_LOOP = 10000;
+
+		System.out.println("Binary search\nN\titerative\trecursive");
+
+		for(int probSize = 100000; probSize <= 2000000; probSize += 100000) {
+			
+			System.out.print(probSize + "\t");
+
+			// Generate a sorted array of random integers
+			int[] arr = new int[probSize];
+			for(int i = 0; i < arr.length; i++) 
+				arr[i] = rng.nextInt(probSize*10);
+			Arrays.sort(arr);
+			
+			// Copy to an Integer array (for use in the generic version)
+			Integer[] arr2 = new Integer[probSize];
+			for(int i = 0; i < arr.length; i++) 
+				arr2[i] = arr[i];
+
+			long stopTime, midpointTime, startTime = System.nanoTime();
+
+			// Stabilize timer
+			while(System.nanoTime() - startTime < 1000000000) { // empty block
+			}
+
+			// Collect running time for ITERATIVE version
+			startTime = System.nanoTime();
+
+			for(int i = 0; i < TIMES_TO_LOOP; i++) {
+				// Generate a random integer to search for
+				int item = rng.nextInt(probSize*10);
+
+				for(long a = 0; a < TIMES_TO_LOOP; a++)
+					for(double d = 1; d <= 10; d++)
+						SimplePriorityQueue.findMin(); 
+			}
+
+			midpointTime = System.nanoTime();
+
+			// Run to capture the "overhead" costs
+			for(int i = 0; i < TIMES_TO_LOOP; i++) { 
+				// Generate random integer to search for
+				int item = rng.nextInt(probSize*10);
+			}
+
+			stopTime = System.nanoTime();
+
+			// Subtract overhead and get average time
+			double averageTime = ((midpointTime - startTime) - (stopTime - midpointTime)) / TIMES_TO_LOOP;
+
+			System.out.print(averageTime + "\t\t");
+
+			// Collect running time for RECURSIVE version
+			startTime = System.nanoTime();
+
+			for(int i = 0; i < TIMES_TO_LOOP; i++) {
+				// Generate a random integer to search for
+				int item = rng.nextInt(probSize*10);
+
+				binarySearch(arr2, item);
+			}
+
+			midpointTime = System.nanoTime();
+
+			// Run to capture the "overhead" costs
+			for(int i = 0; i < TIMES_TO_LOOP; i++) { 
+				// Generate random integer to search for
+				int item = rng.nextInt(probSize*10);
+			}
+
+			stopTime = System.nanoTime();
+
+			// Subtract overhead and get average time
+			averageTime = ((midpointTime - startTime) - (stopTime - midpointTime)) / TIMES_TO_LOOP;
+
+			System.out.println(averageTime);
+		}
+	}
