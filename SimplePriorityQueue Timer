@@ -1,65 +1,121 @@
+
 package assign03;
 
+
+
 import java.util.ArrayList;
+
 import java.util.Arrays;
+
 import java.util.Random;
 
+
+
 public class SimplePriorityQueueTimer {
+
 	/**
+
 	 * This program tries to determine how long it takes to find the min 
+
 	 * of each number
+
 	 */
+
 	@SuppressWarnings("unused")
+
 	public static void main(String[] args) {		
+
 		
+
 		Random rng = new Random();
-		SimplePriorityQueue<Integer> test = new SimplePriorityQueue<Integer>();
+
+
+
 		
+
 		final int TIMES_TO_LOOP = 1000;
+
 		
-		ArrayList<Integer> someInt = new ArrayList<Integer>();
+
+
 
 		System.out.println("Binary search\nN\titerative\trecursive");
 
-		for(int probSize = 100000; probSize <= 2000000; probSize += 100000) {
-			
-			System.out.print(probSize + "\t");
 
-			// Generate a list array of random integers
-			someInt = new ArrayList<Integer>(100000);
-			for(int i = 0; i < 100000; i++) 
-				someInt.add(rng.nextInt());
+
+		for(int probSize = 100000; probSize <= 2000000; probSize += 100000) {
+			SimplePriorityQueue<Integer> s = new SimplePriorityQueue<Integer>();
+			for(int i = 0; i < probSize; i++) {
+				s.insert(probSize - i);
+			}
+
+
 			
+
 			long insertTime = System.nanoTime();
-			test.insertAll(someInt);
+			for(int i = 0; i < probSize; i++) {
+				s.insert(probSize - i);
+			}
+
 			long insertTimeOver = (System.nanoTime() - insertTime);
+
 			System.out.print("insert Time: " + insertTimeOver + "\t");
+
 			
+
 			long stopTime, midpointTime, startTime = System.nanoTime();
 
+
+
 			// Stabilize timer
+
 			while(System.nanoTime() - startTime < 10000000) { // empty block
+
 			}
+
+
 
 			// Collect running time for ITERATIVE version
+
 			startTime = System.nanoTime();
 
+
+
 			for(int i = 0; i < TIMES_TO_LOOP; i++) {
-				test.findMin(); 
+				for(int j = 0; j < probSize; j++) {
+					s.insert(probSize - i);
+				}
+
 			}
+
+
 
 			midpointTime = System.nanoTime();
 
+
+
 			// Run to capture the "overhead" costs
+
 			for(int i = 0; i < TIMES_TO_LOOP; i++) { 
+
 			}
+
+
 
 			stopTime = System.nanoTime();
 
+
+
 			// Subtract overhead and get average time
+
 			double averageTime = (double) ((midpointTime - startTime) - (stopTime - midpointTime)) / TIMES_TO_LOOP;
 
+
+
 			System.out.print(averageTime + "\t\t");
+
 		}
+
 	}
+
 }
